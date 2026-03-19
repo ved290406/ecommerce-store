@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>⚡ Gadget Store</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar">
+  <h2>🛒 GadgetStore</h2>
+
+  <input type="text" id="search" placeholder="Search products...">
+<select id="filter">
+  <option value="all">All</option>
+  <option value="low">Below ₹1000</option>
+  <option value="mid">₹1000 - ₹2000</option>
+  <option value="high">Above ₹2000</option>
+</select>
+  <div class="nav-right">
+    <span onclick="window.location.href='auth.html'">👤 Account</span>
+    <span onclick="goToCheckout()">💳 Orders</span>
+    <span>🛒 <span id="cartCount">0</span></span>
+  </div>
+</header>
+
+<div class="controls">
+  <input type="text" id="search" placeholder="Search gadgets...">
+  <select id="filter">
+    <option value="all">All</option>
+    <option value="low">Below ₹1000</option>
+    <option value="mid">₹1000 - ₹2000</option>
+    <option value="high">Above ₹2000</option>
+  </select>
+</div>
+
+<main>
+  <div class="products" id="products"></div>
+
+  <div class="cart">
+    <h2>Cart</h2>
+    <ul id="cartItems"></ul>
+    <h3>Total: ₹<span id="total">0</span></h3>
+    <button onclick="goToCheckout()">Checkout</button>
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
