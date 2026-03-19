@@ -1,5 +1,12 @@
 [
-  { "id": 1, "name": "Wireless Headphones", "price": 999, "img": "images/headphones.png" },
+  {
+  "id": 1,
+  "name": "Wireless Headphones",
+  "price": 999,
+  "category": "audio",
+  "rating": 4 ,
+  "img": "images/headphones.png"
+},
   { "id": 2, "name": "Smart Watch", "price": 1999, "img": "images/smartwatch.png" },
   { "id": 3, "name": "Mechanical Keyboard", "price": 2499, "img": "images/mechanicalkeyboard.png" },
   { "id": 4, "name": "Gaming Mouse", "price": 799, "img": "images/Gaming mouse.png" },

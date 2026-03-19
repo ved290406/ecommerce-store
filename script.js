@@ -1,6 +1,8 @@
 let products = [];
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
+// Elements
 const productsDiv = document.getElementById("products");
 const cartItems = document.getElementById("cartItems");
 const totalSpan = document.getElementById("total");
@@ -13,7 +15,7 @@ async function loadProducts() {
     products = await res.json();
     showProducts();
   } catch (err) {
-    console.error(err);
+    console.error("Error loading products:", err);
   }
 }
 
@@ -25,6 +27,8 @@ function showProducts() {
   let filter = document.getElementById("filter").value;
 
   productsDiv.innerHTML = "";
+
+  let ratings = JSON.parse(localStorage.getItem("ratings")) || {};
 
   let filtered = products.filter(p => {
     let matchSearch = p.name.toLowerCase().includes(search);
@@ -39,12 +43,17 @@ function showProducts() {
   });
 
   filtered.forEach(p => {
+    let rating = ratings[p.id] || p.rating || 0;
+
     productsDiv.innerHTML += `
       <div class="card" onclick="openProduct(${p.id})">
         <img src="${p.img}">
         <h3>${p.name}</h3>
         <p>₹${p.price}</p>
+        <p>⭐ ${rating}</p>
+
         <button onclick="event.stopPropagation(); addToCart(${p.id})">Add</button>
+        <button onclick="event.stopPropagation(); addToWishlist(${p.id})">❤️</button>
       </div>
     `;
   });
@@ -92,6 +101,17 @@ function updateCart() {
   cartCount.innerText = cart.length;
 }
 
+// Wishlist
+function addToWishlist(id) {
+  if (!wishlist.includes(id)) {
+    wishlist.push(id);
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    alert("Added to wishlist ❤️");
+  } else {
+    alert("Already in wishlist");
+  }
+}
+
 // Open Product Page
 function openProduct(id) {
   localStorage.setItem("productId", id);
@@ -109,10 +129,28 @@ if (document.getElementById("productPage")) {
         <img src="${product.img}">
         <h2>${product.name}</h2>
         <p>₹${product.price}</p>
+
+        <button onclick="addToWishlist(${product.id})">❤️ Add to Wishlist</button>
+
+        <p>Rate:</p>
+        <button onclick="rateProduct(${product.id}, 5)">⭐⭐⭐⭐⭐</button>
+        <button onclick="rateProduct(${product.id}, 4)">⭐⭐⭐⭐</button>
+        <button onclick="rateProduct(${product.id}, 3)">⭐⭐⭐</button>
+
+        <br><br>
         <button onclick="addToCart(${product.id})">Add to Cart</button>
       </div>
     `;
   });
+}
+
+// Rating
+function rateProduct(id, rating) {
+  let ratings = JSON.parse(localStorage.getItem("ratings")) || {};
+  ratings[id] = rating;
+
+  localStorage.setItem("ratings", JSON.stringify(ratings));
+  alert("Rating saved ⭐");
 }
 
 // Search + Filter
@@ -121,7 +159,7 @@ if (document.getElementById("search")) {
   document.getElementById("filter").addEventListener("change", showProducts);
 }
 
-// Auth System
+// Auth
 let isLogin = true;
 
 function toggleAuth() {
@@ -157,11 +195,34 @@ function goToCheckout() {
 
 // Place Order
 function placeOrder() {
+  let nameInput = document.getElementById("name");
+  let addressInput = document.getElementById("address");
+  let phoneInput = document.getElementById("phone");
+
+  let name = nameInput ? nameInput.value.trim() : "";
+  let address = addressInput ? addressInput.value.trim() : "";
+  let phone = phoneInput ? phoneInput.value.trim() : "";
+
+  // DEBUG (optional)
+  console.log(name, address, phone);
+
+  if (!name || !address || !phone) {
+    alert("⚠️ Please fill all details before placing order!");
+    return;
+  }
+
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  if (cart.length === 0) {
+    alert("🛒 Cart is empty!");
+    return;
+  }
+
   let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
   orders.push({
     items: cart,
+    user: { name, address, phone },
     date: new Date().toLocaleString()
   });
 
@@ -170,10 +231,9 @@ function placeOrder() {
 
   window.location.href = "success.html";
 }
-
 // Orders Page
 if (document.getElementById("orders")) {
-  let orders = JSON.parse(localStorage.getItem("orders")) || "";
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
   let html = "";
 
   orders.forEach(order => {
@@ -195,6 +255,82 @@ if (document.getElementById("orders")) {
   document.getElementById("orders").innerHTML = html;
 }
 
+// Wishlist Page
+if (document.getElementById("wishlist")) {
+  loadProducts().then(() => {
+    let wishlistIds = JSON.parse(localStorage.getItem("wishlist")) || [];
+    let html = "";
+
+    wishlistIds.forEach((id, index) => {
+      let product = products.find(p => p.id == id);
+
+      if (product) {
+        html += `
+          <div class="card">
+            <img src="${product.img}">
+            <h3>${product.name}</h3>
+            <p>₹${product.price}</p>
+
+            <button onclick="removeFromWishlist(${index})">❌ Remove</button>
+          </div>
+        `;
+      }
+    });
+
+    document.getElementById("wishlist").innerHTML = html;
+  });
+}
+
+function updateWishlistCount() {
+  let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+  let countEl = document.getElementById("wishlistCount");
+
+  if (countEl) {
+    countEl.innerText = wishlist.length;
+  }
+}
+
+function addToWishlist(id) {
+  if (!wishlist.includes(id)) {
+    wishlist.push(id);
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+    updateWishlistCount();
+    alert("Added to wishlist ❤️");
+  } else {
+    alert("Already in wishlist");
+  }
+}
+
+// refresh page
+function removeFromWishlist(index) {
+  let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+  wishlist.splice(index, 1);
+
+  localStorage.setItem("wishlist", JSON.stringify(wishlist));
+
+  location.reload(); // refresh page
+}
+// Dashboard
+if (document.getElementById("totalOrders")) {
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  let totalSpent = 0;
+
+  orders.forEach(order => {
+    order.items.forEach(item => {
+      totalSpent += item.price;
+    });
+  });
+
+  document.getElementById("totalOrders").innerText = orders.length;
+  document.getElementById("totalSpent").innerText = totalSpent;
+}
+function goHome() {
+  window.location.href = "index.html";
+}
 // Init
 loadProducts();
 updateCart();
+updateWishlistCount();
+if (cartItems) {
+  updateCart();
+}
