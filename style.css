@@ -153,3 +153,100 @@ li {
 .checkout button:hover {
   background: #f7ca00;
 }
+/* SUCCESS PAGE */
+.success-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+.success-box {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  animation: fadeIn 0.6s ease;
+}
+
+.success-box h1 {
+  color: green;
+}
+
+.success-box button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #ffd814;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+/* LOADER */
+#loader {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: #0f172a;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  font-size: 24px;
+}
+body {
+  animation: fadeIn 0.5s ease;
+}
+/* MOBILE FIX */
+@media (max-width: 768px) {
+
+  .navbar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .navbar input {
+    width: 90%;
+  }
+
+  main {
+    flex-direction: column;
+  }
+
+  .cart {
+    margin-left: 0;
+    margin-top: 20px;
+  }
+
+  .products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .checkout {
+    width: 90%;
+  }
+
+  .auth-box {
+    width: 90%;
+  }
+}
+.auth-box {
+  width: 300px;
+  margin: 100px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.auth-box input {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+}

@@ -6,11 +6,15 @@ const cartItems = document.getElementById("cartItems");
 const totalSpan = document.getElementById("total");
 const cartCount = document.getElementById("cartCount");
 
-// Load JSON
+// Load Products
 async function loadProducts() {
-  let res = await fetch("products.json");
-  products = await res.json();
-  showProducts();
+  try {
+    let res = await fetch("products.json");
+    products = await res.json();
+    showProducts();
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 // Show Products
@@ -53,13 +57,13 @@ function addToCart(id) {
   saveCart();
 }
 
-// Remove
+// Remove from Cart
 function removeFromCart(index) {
   cart.splice(index, 1);
   saveCart();
 }
 
-// Save
+// Save Cart
 function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCart();
@@ -77,6 +81,7 @@ function updateCart() {
 
     cartItems.innerHTML += `
       <li>
+        <img src="${item.img}" width="40">
         ${item.name} - ₹${item.price}
         <button onclick="removeFromCart(${index})">❌</button>
       </li>
@@ -93,7 +98,7 @@ function openProduct(id) {
   window.location.href = "product.html";
 }
 
-// Product Page Load
+// Product Page
 if (document.getElementById("productPage")) {
   loadProducts().then(() => {
     let id = localStorage.getItem("productId");
@@ -110,15 +115,13 @@ if (document.getElementById("productPage")) {
   });
 }
 
-// Events
+// Search + Filter
 if (document.getElementById("search")) {
   document.getElementById("search").addEventListener("input", showProducts);
   document.getElementById("filter").addEventListener("change", showProducts);
 }
 
-// Init
-loadProducts();
-updateCart();
+// Auth System
 let isLogin = true;
 
 function toggleAuth() {
@@ -130,26 +133,68 @@ function handleAuth() {
   let user = document.getElementById("username").value;
   let pass = document.getElementById("password").value;
 
-  if (isLogin) {
-    let savedUser = JSON.parse(localStorage.getItem("user"));
+  let users = JSON.parse(localStorage.getItem("users")) || [];
 
-    if (savedUser && savedUser.username === user && savedUser.password === pass) {
-      alert("Login successful");
+  if (isLogin) {
+    let found = users.find(u => u.username === user && u.password === pass);
+    if (found) {
+      alert("Login success");
       window.location.href = "index.html";
     } else {
-      alert("Invalid credentials");
+      alert("Invalid login");
     }
   } else {
-    localStorage.setItem("user", JSON.stringify({ username: user, password: pass }));
-    alert("Signup successful");
+    users.push({ username: user, password: pass });
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("Signup success");
   }
 }
-function placeOrder() {
-  alert("🎉 Order placed successfully!");
-  localStorage.removeItem("cart");
-  window.location.href = "index.html";
-}function goToCheckout() {
+
+// Checkout
+function goToCheckout() {
   window.location.href = "checkout.html";
 }
-document.getElementById("search").addEventListener("input", showProducts);
-document.getElementById("filter").addEventListener("change", showProducts);
+
+// Place Order
+function placeOrder() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+  orders.push({
+    items: cart,
+    date: new Date().toLocaleString()
+  });
+
+  localStorage.setItem("orders", JSON.stringify(orders));
+  localStorage.removeItem("cart");
+
+  window.location.href = "success.html";
+}
+
+// Orders Page
+if (document.getElementById("orders")) {
+  let orders = JSON.parse(localStorage.getItem("orders")) || "";
+  let html = "";
+
+  orders.forEach(order => {
+    html += `<div class="card">
+      <h3>${order.date}</h3>`;
+
+    order.items.forEach(item => {
+      html += `
+        <p>
+          <img src="${item.img}" width="40">
+          ${item.name} - ₹${item.price}
+        </p>
+      `;
+    });
+
+    html += "</div>";
+  });
+
+  document.getElementById("orders").innerHTML = html;
+}
+
+// Init
+loadProducts();
+updateCart();
