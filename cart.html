@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cart</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="cart-page">
+
+  <h2 class="cart-title">🛒 Your Cart</h2>
+
+  <div class="cart-layout">
+
+    <!-- LEFT: ITEMS -->
+    <div class="cart-items" id="cartItems"></div>
+
+    <!-- RIGHT: SUMMARY -->
+    <div class="cart-summary">
+      <h3>Order Summary</h3>
+
+      <p>Items: <span id="cartCount">0</span></p>
+      <h2>Total: ₹<span id="total">0</span></h2>
+
+      <button onclick="goToCheckout()">Proceed to Buy</button>
+      <button class="continue" onclick="goHome()">Continue Shopping</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

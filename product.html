@@ -1,17 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Product</title>
-  <link rel="stylesheet" href="style.css">
+<title>Product Details</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header>
-  <h1>⚡ Product Details</h1>
-</header>
+<div class="product-page">
 
-<div class="product-page" id="productPage"></div>
+<div class="product-img">
+<img id="productImage">
+</div>
 
-<script src="script.js"></script>
+<div class="product-info">
+
+<h2 id="productName"></h2>
+
+<p class="price" id="productPrice"></p>
+
+<p class="desc">
+High quality product with premium build and best performance.
+</p>
+
+<button onclick="addToCartFromDetails()">Add to Cart</button>
+
+<button class="buy-btn">Buy Now</button>
+
+</div>
+
+</div>
+
+<script>
+
+let product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+if(product){
+
+document.getElementById("productImage").src = product.image || product.img;
+document.getElementById("productName").innerText = product.name || "Product";
+document.getElementById("productPrice").innerText = "₹" + (product.price || 0);
+
+}else{
+
+document.body.innerHTML = "<h2>Product not found</h2>";
+
+}
+
+</script>
 </body>
 </html>

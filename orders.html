@@ -1,15 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Orders</title>
-  <link rel="stylesheet" href="style.css">
+<title>My Orders</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
+
 <body>
 
-<h1>📦 My Orders</h1>
+<div class="orders-container">
 
-<div id="orders"></div>
+<h2>📦 My Orders</h2>
 
-<script src="script.js"></script>
+<div id="ordersList"></div>
+
+</div>
+
+<script>
+
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+let container = document.getElementById("ordersList");
+
+if(orders.length === 0){
+container.innerHTML = "<p>No orders yet</p>";
+}
+
+orders.forEach(order => {
+
+container.innerHTML += `
+
+<div class="order-card">
+
+<img src="${order.img}">
+
+<div class="order-info">
+
+<h3>${order.name}</h3>
+
+<p>Price: ₹${order.price}</p>
+
+<p class="status">Status: Delivered</p>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+</script>
+
 </body>
 </html>

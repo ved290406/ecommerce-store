@@ -1,17 +1,20 @@
+/* ===============================
+   GLOBAL VARIABLES
+================================ */
+
 let products = [];
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
-// Elements
-const productsDiv = document.getElementById("products");
-const cartItems = document.getElementById("cartItems");
-const totalSpan = document.getElementById("total");
-const cartCount = document.getElementById("cartCount");
 
-// Load Products
+/* ===============================
+   LOAD PRODUCTS (Home Page)
+================================ */
+
 async function loadProducts() {
   try {
-   let res = await fetch("products.json");
+    let res = await fetch("products.json");
     products = await res.json();
     showProducts();
   } catch (err) {
@@ -19,8 +22,14 @@ async function loadProducts() {
   }
 }
 
-// Show Products
+
+/* ===============================
+   SHOW PRODUCTS (Home Page)
+================================ */
+
 function showProducts() {
+
+  const productsDiv = document.getElementById("products");
   if (!productsDiv) return;
 
   let search = document.getElementById("search")?.value.toLowerCase() || "";
@@ -28,9 +37,8 @@ function showProducts() {
 
   productsDiv.innerHTML = "";
 
-  let ratings = JSON.parse(localStorage.getItem("ratings")) || {};
-
   let filtered = products.filter(p => {
+
     let matchSearch = p.name.toLowerCase().includes(search);
 
     let matchFilter =
@@ -40,209 +48,342 @@ function showProducts() {
       (filter === "high" && p.price > 2000);
 
     return matchSearch && matchFilter;
+
   });
 
-  filtered.forEach(p => {
-    let rating = ratings[p.id] || p.rating || 0;
+  filtered.forEach((p, index) => {
 
     productsDiv.innerHTML += `
-      <div class="card" onclick="openProduct(${p.id})">
-        <img src="${p.img}">
-        <h3>${p.name}</h3>
-        <p>₹${p.price}</p>
-        <p>⭐ ${rating}</p>
+      <div class="card" onclick="openProduct(${index})">
 
-        <button onclick="event.stopPropagation(); addToCart(${p.id})">Add</button>
-        <button onclick="event.stopPropagation(); addToWishlist(${p.id})">❤️</button>
+        <img src="${p.img}" onerror="this.src='https://via.placeholder.com/200'">
+
+        <h3>${p.name}</h3>
+
+        <p>₹${p.price}</p>
+
+        <button onclick="event.stopPropagation(); addToCart(${index})">
+        Add to Cart
+        </button>
+
+        <button onclick="event.stopPropagation(); addToWishlist(${index})">
+        ❤️
+        </button>
+
       </div>
     `;
+
   });
+
 }
 
-// Cart
-function addToCart(id) {
-  let item = products.find(p => p.id === id);
-  cart.push(item);
-  saveCart();
+
+/* ===============================
+   PRODUCT PAGE
+================================ */
+
+function openProduct(index) {
+
+  localStorage.setItem("selectedProduct", JSON.stringify(products[index]));
+
+  window.location.href = "product.html";
+
 }
 
-function removeFromCart(index) {
-  cart.splice(index, 1);
-  saveCart();
+
+function loadProductPage() {
+
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  if (!product) return;
+
+  const container = document.getElementById("productPage");
+
+  container.innerHTML = `
+    <div class="product-details">
+
+      <img id="mainImg" src="${product.img}">
+
+      <h2>${product.name}</h2>
+
+      <p>Price : ₹${product.price}</p>
+
+      <button onclick="addToCartFromProduct()">Add To Cart</button>
+
+      <button onclick="addToWishlistFromProduct()">❤️ Wishlist</button>
+
+    </div>
+  `;
+
 }
 
-function saveCart() {
+
+function addToCartFromProduct() {
+
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  cart.push(product);
+
   localStorage.setItem("cart", JSON.stringify(cart));
+
+  alert("Added to Cart");
+
   updateCart();
+
 }
+
+
+function addToWishlistFromProduct() {
+
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  wishlist.push(product);
+
+  localStorage.setItem("wishlist", JSON.stringify(wishlist));
+
+  alert("Added to Wishlist");
+
+  updateWishlistCount();
+
+}
+
+
+/* ===============================
+   CART PAGE
+================================ */
+
+function addToCart(index) {
+
+  let product = products[index];
+
+  cart.push(product);
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  updateCart();
+
+}
+
 
 function updateCart() {
-  if (!cartItems) return;
 
-  cartItems.innerHTML = "";
+  const container = document.getElementById("cartItems");
+  const totalSpan = document.getElementById("total");
+  const cartCount = document.getElementById("cartCount");
+
+  cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  if (cartCount) cartCount.innerText = cart.length;
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (cart.length === 0) {
+
+    container.innerHTML = "<h3>Your cart is empty 😢</h3>";
+
+    if (totalSpan) totalSpan.innerText = 0;
+
+    return;
+
+  }
+
   let total = 0;
 
   cart.forEach((item, index) => {
+
     total += item.price;
 
-    cartItems.innerHTML += `
-      <li>
-        <img src="${item.img}" width="40">
-        ${item.name} - ₹${item.price}
-        <button onclick="removeFromCart(${index})">❌</button>
-      </li>
+    container.innerHTML += `
+      <div class="cart-item">
+
+        <img src="${item.img}" width="80">
+
+        <div>
+          <h3>${item.name}</h3>
+          <p>₹${item.price}</p>
+        </div>
+
+        <button onclick="removeFromCart(${index})">
+        Remove
+        </button>
+
+      </div>
     `;
+
   });
 
   if (totalSpan) totalSpan.innerText = total;
-  if (cartCount) cartCount.innerText = cart.length;
+
 }
 
-// Wishlist
-function addToWishlist(id) {
-  let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
-  if (!wishlist.includes(id)) {
-    wishlist.push(id);
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
-    updateWishlistCount();
-    alert("Added to wishlist ❤️");
-  } else {
-    alert("Already in wishlist");
-  }
+function removeFromCart(index) {
+
+  cart.splice(index, 1);
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  updateCart();
+
 }
 
-function removeFromWishlist(index) {
-  let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-  wishlist.splice(index, 1);
+
+/* ===============================
+   WISHLIST
+================================ */
+
+function addToWishlist(index) {
+
+  let product = products[index];
+
+  wishlist.push(product);
+
   localStorage.setItem("wishlist", JSON.stringify(wishlist));
-  location.reload();
+
+  alert("Added to Wishlist ❤️");
+
+  updateWishlistCount();
+
 }
+
 
 function updateWishlistCount() {
-  let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-  let countEl = document.getElementById("wishlistCount");
-  if (countEl) countEl.innerText = wishlist.length;
+
+  const countEl = document.getElementById("wishlistCount");
+
+  if (!countEl) return;
+
+  countEl.innerText = wishlist.length;
+
 }
 
-// Product Page
-function openProduct(id) {
-  localStorage.setItem("productId", id);
-  window.location.href = "product.html";
-}
 
-if (document.getElementById("productPage")) {
-  loadProducts().then(() => {
-    let id = localStorage.getItem("productId");
-    let product = products.find(p => p.id == id);
+/* ===============================
+   CHECKOUT
+================================ */
 
-    document.getElementById("productPage").innerHTML = `
-      <div class="card">
-        <img id="mainImg" src="${product.img}">
-
-        <div>
-          ${product.images ? product.images.map(img => `
-            <img src="${img}" width="50" onclick="changeImage('${img}')">
-          `).join("") : ""}
-        </div>
-
-        <h2>${product.name}</h2>
-        <p>₹${product.price}</p>
-
-        <button onclick="addToWishlist(${product.id})">❤️</button>
-        <button onclick="addToCart(${product.id})">Add to Cart</button>
-      </div>
-    `;
-  });
-}
-
-function changeImage(src) {
-  document.getElementById("mainImg").src = src;
-}
-
-// Search Suggestion
-let searchInput = document.getElementById("search");
-let suggestionsDiv = document.getElementById("suggestions");
-
-if (searchInput && suggestionsDiv) {
-  searchInput.addEventListener("input", () => {
-    let value = searchInput.value.toLowerCase();
-    suggestionsDiv.innerHTML = "";
-
-    if (!value) return;
-
-    let matches = products.filter(p =>
-      p.name.toLowerCase().includes(value)
-    );
-
-    matches.slice(0, 5).forEach(p => {
-      suggestionsDiv.innerHTML += `
-        <div onclick="openProduct(${p.id})">${p.name}</div>
-      `;
-    });
-  });
-}
-
-// Checkout
 function goToCheckout() {
+
   window.location.href = "checkout.html";
+
 }
+
 
 function placeOrder() {
-  let name = document.getElementById("name")?.value.trim();
-  let address = document.getElementById("address")?.value.trim();
-  let phone = document.getElementById("phone")?.value.trim();
-  let payment = document.querySelector('input[name="payment"]:checked');
-
-  if (!name || !address || !phone) {
-    alert("⚠️ Fill all details!");
-    return;
-  }
-
-  if (!payment) {
-    alert("💳 Select payment method!");
-    return;
-  }
-
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
   if (cart.length === 0) {
-    alert("Cart empty!");
+
+    alert("Cart is empty");
+
     return;
+
   }
 
-  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+  let order = {
 
-  orders.push({
-    items: cart,
-    user: { name, address, phone },
-    payment: payment.value,
-    date: new Date().toLocaleString()
-  });
+    date: new Date().toLocaleString(),
+
+    items: cart
+
+  };
+
+  orders.push(order);
 
   localStorage.setItem("orders", JSON.stringify(orders));
+
   localStorage.removeItem("cart");
 
-  window.location.href = "success.html";
+  cart = [];
+
+  alert("Order Placed Successfully 🎉");
+
+  window.location.href = "orders.html";
+
 }
 
-// Orders Page
-if (document.getElementById("orders")) {
+
+/* ===============================
+   ORDERS PAGE
+================================ */
+
+function loadOrders() {
+
+  const container = document.getElementById("orders");
+
+  if (!container) return;
+
   let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+  if (orders.length === 0) {
+
+    container.innerHTML = "<h3>No Orders Yet</h3>";
+
+    return;
+
+  }
+
   let html = "";
 
   orders.forEach(order => {
-    html += `<div class="card"><h3>${order.date}</h3>`;
+
+    html += `
+      <div class="card">
+
+        <h3>Order Date : ${order.date}</h3>
+    `;
+
     order.items.forEach(item => {
-      html += `<p><img src="${item.img}" width="40"> ${item.name} - ₹${item.price}</p>`;
+
+      html += `
+        <p>
+
+        <img src="${item.img}" width="40">
+
+        ${item.name} - ₹${item.price}
+
+        </p>
+      `;
+
     });
+
     html += "</div>";
+
   });
 
-  document.getElementById("orders").innerHTML = html;
+  container.innerHTML = html;
+
 }
 
-// Init
-loadProducts();
-updateCart();
-updateWishlistCount();
+
+/* ===============================
+   NAVIGATION FUNCTIONS
+================================ */
+
+function openCart() {
+  window.location.href = "cart.html";
+}
+
+function goHome() {
+  window.location.href = "index.html";
+}
+
+
+/* ===============================
+   PAGE INIT
+================================ */
+
+window.addEventListener("DOMContentLoaded", () => {
+
+  loadProducts();
+
+  updateCart();
+
+  updateWishlistCount();
+
+  loadProductPage();
+
+  loadOrders();
+
+});

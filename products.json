@@ -10,7 +10,86 @@
   ]
 },
   { "id": 2, "name": "Smart Watch", "price": 1999, "img": "images/smartwatch.png" },
-  { "id": 3, "name": "Mechanical Keyboard", "price": 2499, "img": "images/mechanicalkeyboard.png" },
+  { "id": 3, "name": "Mechanical Keyboard", "price": 2499, "img": "images/keyboard.png" },
   { "id": 4, "name": "Gaming Mouse", "price": 799, "img": "images/Gaming mouse.png" },
-  { "id": 5, "name": "Bluetooth Speaker", "price": 1299, "img": "images/Bluetooth Speaker.png" }
+  
+  {
+    "id": 5,
+    "name": "Laptop",
+    "price": 475000,
+    "img": "images/Laptop.png"
+  },
+{
+  "id": 6,
+  "name": "Laptop Cooling Pad",
+  "price": 899,
+  "img": "images/Cooling pad.png"
+},
+{
+  "id": 7,
+  "name": "Wireless Gaming Controller",
+  "price": 1999,
+  "img": "images/Wireless Gaming Controller.png"
+},
+{
+  "id": 8,
+  "name": "Wireless Powerbank",
+  "price": 1299,
+  "img": "images/Wireless Powerbank.png "
+},
+{
+  "id": 9,
+  "name": "Noise Cancelling Earbuds",
+  "price": 3499,
+  "img": "images/Noise cancel.png"
+},
+{
+    "id": 10,
+    "name": "LED Monitor",
+    "price": 8999,
+    "img": "images/LED Monitor.png"
+  },
+{
+  "id": 11,
+  "name": "1080p HD Webcam",
+  "price": 1399,
+  "img": "images/Webcam HD.png"
+},
+ {
+    "id": 12,
+    "name": "Tablet",
+    "price": 15999,
+    "img": "images/tablet.png"
+  },
+{
+  "id": 7,
+  "name": "USB Type-C Cable",
+  "price": 199,
+  "img": "images/Type c.png"
+},
+  {
+    "id": 15,
+    "name": "Phone Charger",
+    "price": 299,
+    "img": "images/charger.jpg"
+  },
+  {
+    "id": 16,
+    "name": "PowerBank",
+    "price": 999,
+    "img": "images/powerbank.jpg"
+  },
+  {
+  "id": 17,
+  "name": "Portable Bluetooth Speaker",
+  "price": 1499,
+  "img": "images/BS.png"
+},
+  {
+  "id": 10,
+  "name": "Neckband",
+  "price": 799,
+  "img": "images/Neckband.png"
+},
+    { "id": 5, "name": "Bluetooth Speaker", "price": 1299, "img": "images/Bluetooth Speaker.png" }
 ]
