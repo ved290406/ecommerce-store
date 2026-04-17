@@ -1,54 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <title>My Orders</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
 
-<div class="orders-container">
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
 
-<h2>📦 My Orders</h2>
+  <div class="logo" onclick="goHome()">🛒 ShopZone </div>
 
-<div id="ordersList"></div>
+  <div class="nav-right">
+    <div class="nav-item" onclick="goHome()">🏠 Home</div>
+    <div class="nav-item" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</div>
+  </div>
 
 </div>
+
+<!-- ================= ORDERS ================= -->
+<div class="orders-container" id="orders"></div>
+
+<!-- ================= SCRIPT ================= -->
+<script src="script.js"></script>
 
 <script>
 
-let orders = JSON.parse(localStorage.getItem("orders")) || [];
+/* ===============================
+   DUMMY REVIEWS
+================================ */
+const dummyReviews = [
+  "⭐⭐⭐⭐⭐ Excellent product!",
+  "⭐⭐⭐⭐ Very good quality",
+  "⭐⭐⭐⭐⭐ Worth the price",
+  "⭐⭐⭐ Average performance",
+  "⭐⭐⭐⭐ Nice and useful"
+];
 
-let container = document.getElementById("ordersList");
+/* ===============================
+   LOAD ORDERS
+================================ */
+function loadOrdersPage() {
 
-if(orders.length === 0){
-container.innerHTML = "<p>No orders yet</p>";
+  const container = document.getElementById("orders");
+
+  let orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+  if (orders.length === 0) {
+    container.innerHTML = "<h2>No Orders Yet 😢</h2>";
+    return;
+  }
+
+  let html = "";
+
+  orders.forEach(order => {
+
+    html += `
+      <div class="order-card">
+
+        <h3>📦 Order Date: ${order.date}</h3>
+        <p class="status">✔ Delivered</p>
+    `;
+
+    order.items.forEach(item => {
+
+      let review = dummyReviews[Math.floor(Math.random() * dummyReviews.length)];
+
+      html += `
+        <div class="order-item">
+
+          <img src="${item.img}" 
+          onerror="this.src='https://via.placeholder.com/100'">
+
+          <div>
+            <h4>${item.name}</h4>
+            <p>₹${item.price}</p>
+            <p class="review">${review}</p>
+          </div>
+
+        </div>
+      `;
+    });
+
+    html += `</div>`;
+    
+  });
+
+  container.innerHTML = html;
 }
 
-orders.forEach(order => {
+/* ===============================
+   NAV FUNCTIONS
+================================ */
+function goHome() {
+  window.location.href = "index.html";
+}
 
-container.innerHTML += `
+function openCart() {
+  window.location.href = "cart.html";
+}
 
-<div class="order-card">
-
-<img src="${order.img}">
-
-<div class="order-info">
-
-<h3>${order.name}</h3>
-
-<p>Price: ₹${order.price}</p>
-
-<p class="status">Status: Delivered</p>
-
-</div>
-
-</div>
-
-`;
-
+/* ===============================
+   INIT
+================================ */
+window.addEventListener("DOMContentLoaded", () => {
+  loadOrdersPage();
+  updateCart();
 });
 
 </script>

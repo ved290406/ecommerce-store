@@ -1,52 +1,141 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
 <title>Product Details</title>
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="product-page">
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
 
-<div class="product-img">
-<img id="productImage">
-</div>
+  <div class="logo" onclick="goHome()">🛒 LJ Store</div>
 
-<div class="product-info">
+  <div class="nav-center">
+    <input type="text" placeholder="Search products..." id="search">
+    <button>🔍</button>
+  </div>
 
-<h2 id="productName"></h2>
-
-<p class="price" id="productPrice"></p>
-
-<p class="desc">
-High quality product with premium build and best performance.
-</p>
-
-<button onclick="addToCartFromDetails()">Add to Cart</button>
-
-<button class="buy-btn">Buy Now</button>
+  <div class="nav-right">
+    <div class="nav-item" onclick="goHome()">🏠 Home</div>
+    <div class="nav-item" onclick="openCart()">🛒 Cart (<span id="cartCount">0</span>)</div>
+    <div class="nav-item" onclick="window.location.href='orders.html'">📦 Orders</div>
+  </div>
 
 </div>
 
-</div>
+<!-- ================= PRODUCT SECTION ================= -->
+<div id="productPage"></div>
+
+<!-- ================= SCRIPT ================= -->
+<script src="script.js"></script>
 
 <script>
 
-let product = JSON.parse(localStorage.getItem("selectedProduct"));
+/* ===============================
+   LOAD PRODUCT PAGE (FIXED 🔥)
+================================ */
+function loadProductPage() {
 
-if(product){
+  const product = JSON.parse(localStorage.getItem("selectedProduct"));
 
-document.getElementById("productImage").src = product.image || product.img;
-document.getElementById("productName").innerText = product.name || "Product";
-document.getElementById("productPrice").innerText = "₹" + (product.price || 0);
+  const container = document.getElementById("productPage");
 
-}else{
+  if (!product || !container) {
+    container.innerHTML = "<h2 style='padding:20px'>Product not found ❌</h2>";
+    return;
+  }
 
-document.body.innerHTML = "<h2>Product not found</h2>";
+  container.innerHTML = `
+    <div class="product-wrapper">
 
+      <!-- LEFT IMAGE -->
+      <div class="product-img">
+        <img src="${product.img}" onerror="this.src='https://via.placeholder.com/300'">
+      </div>
+
+      <!-- RIGHT DETAILS -->
+      <div class="product-info">
+
+        <h1>${product.name}</h1>
+
+        <div class="price">₹${product.price}</div>
+
+        <p class="desc">
+          High quality product with premium design. Perfect for daily use.
+        </p>
+
+        <!-- BUTTONS -->
+        <div class="product-actions">
+
+          <button onclick="addToCartFromProduct()">
+            🛒 Add to Cart
+          </button>
+
+          <button class="buy-btn" onclick="buyNow()">
+            ⚡ Buy Now
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
 }
 
+/* ===============================
+   ADD TO CART
+================================ */
+function addToCartFromProduct() {
+
+  let product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  cart.push(product);
+
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  alert("Added to Cart ✅");
+
+  updateCart();
+}
+
+/* ===============================
+   BUY NOW
+================================ */
+function buyNow() {
+
+  let product = JSON.parse(localStorage.getItem("selectedProduct"));
+
+  localStorage.setItem("cart", JSON.stringify([product]));
+
+  window.location.href = "checkout.html";
+}
+
+/* ===============================
+   NAV FUNCTIONS
+================================ */
+function openCart() {
+  window.location.href = "cart.html";
+}
+
+function goHome() {
+  window.location.href = "index.html";
+}
+
+/* ===============================
+   INIT
+================================ */
+window.addEventListener("DOMContentLoaded", () => {
+  loadProductPage();
+  updateCart();
+});
+
 </script>
+
 </body>
 </html>

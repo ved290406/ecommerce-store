@@ -1,58 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>⚡ Gadget Store</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>LJ Store</title>
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
+<!-- ================= NAVBAR ================= -->
+<div class="navbar">
 
-<header class="navbar">
-
-<div class="nav-left">
-<h2 class="logo">ShopZone</h2>
-</div>
-
+  <!-- LOGO -->
+  <div class="logo" onclick="goHome()">🛒 ShopZone </div>
 <div class="nav-center">
-<input type="text" placeholder="Search products...">
-<button>🔍</button>
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Search products...">
+    <button onclick="searchProducts()">🔍</button>
+  </div>
 </div>
-<select id="filter">
-    <option value="all">All</option>
-    <option value="low">Below ₹1000</option>
-    <option value="mid">₹1000 - ₹2000</option>
-    <option value="high">Above ₹2000</option>
-  </select>
-</div>
-
-<div class="nav-right">
-
-<a href="wishlist.html" class="nav-item">
-❤️ <span id="wishlistCount">0</span>
+  <!-- RIGHT MENU -->
+  <div class="nav-right">
+  <a href="wishlist.html" class="nav-item">
+  ❤️ Wishlist (<span id="wishlistCount">0</span>)
 </a>
-
-<a href="cart.html" class="nav-item">
-🛒 <span id="cartCount">0</span>
-</a>
-
-<a href="orders.html" class="nav-item">
-📦 Orders
-</a>
-
-<a href="account.html" class="nav-item">
-👤 Account
-</a>
+    <div class="nav-item" onclick="openCart()"> 🛒 Cart (<span id="cartCount">0</span>)
+    </div>
+    <div class="nav-item" onclick="goOrders()">📦 Orders</div>
+  </div>
 
 </div>
 
-</header>
+<!-- ================= PRODUCTS ================= -->
+<div class="products" id="products"></div>
 
-<main>
-  <div class="products" id="products"></div>
-
-</main>
-<div id="loader">Loading...</div>
+<!-- ================= SCRIPT ================= -->
 <script src="script.js"></script>
+
+<script>
+
+/* ===============================
+   SEARCH FUNCTION
+================================ */
+function searchProducts() {
+
+  let value = document.getElementById("search").value.toLowerCase();
+
+  let filtered = products.filter(p =>
+    p.name.toLowerCase().includes(value)
+  );
+
+  showFilteredProducts(filtered);
+}
+
+function showFilteredProducts(list) {
+
+  const container = document.getElementById("products");
+
+  container.innerHTML = "";
+
+  if (list.length === 0) {
+    container.innerHTML = "<h2 style='padding:20px'>No products found 😢</h2>";
+    return;
+  }
+
+  list.forEach((p, index) => {
+
+    container.innerHTML += `
+      <div class="card" onclick="openProduct(${index})">
+
+        <img src="${p.img || 'https://via.placeholder.com/200'}"
+        onerror="this.src='https://via.placeholder.com/200'">
+
+        <h3>${p.name}</h3>
+        <p>₹${p.price}</p>
+
+        <button onclick="event.stopPropagation(); addToCart(${index})">
+          Add to Cart
+        </button>
+
+      </div>
+    `;
+  });
+}
+
+/* ===============================
+   NAV FUNCTIONS
+================================ */
+function goHome() {
+  window.location.href = "index.html";
+}
+
+function openCart() {
+  window.location.href = "cart.html";
+}
+
+function goOrders() {
+  window.location.href = "orders.html";
+}
+
+/* ===============================
+   INIT
+================================ */
+window.addEventListener("DOMContentLoaded", () => {
+  loadProducts();   // from script.js
+  updateCart();     // update cart count
+});
+
+</script>
+
 </body>
 </html>
