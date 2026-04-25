@@ -3,11 +3,7 @@
   "id": 1,
   "name": "Headphones",
   "price": 999,
-  "img": "images/headphones.png",
-  "images": [
-    "images/Headphones2.png",
-    "images/Headphones3.png"
-  ]
+  "img": "images/headphones.png"
 },
   { "id": 2, "name": "Smart Watch", "price": 1999, "img": "images/smartwatch.png" },
   { "id": 3, "name": "Mechanical Keyboard", "price": 2499, "img": "images/keyboard.png" },

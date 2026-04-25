@@ -148,12 +148,14 @@ function placeOrder() {
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  let paymentMethod = document.querySelector('input[name="payment"]:checked');
+  let paymentMethodEl = document.querySelector('input[name="payment"]:checked');
 
-  if (!paymentMethod) {
+  if (!paymentMethodEl) {
     alert("Select payment method ❌");
     return;
   }
+
+  let paymentMethod = paymentMethodEl.value;
 
   let order = {
     id: Date.now(),
@@ -162,9 +164,9 @@ function placeOrder() {
     status: "Processing",
     step: 1,
 
-    // 🔥 NEW
-    paymentStatus: paymentMethod.value === "COD" ? "Unpaid ❌" : "Paid ✅",
-    paymentMethod: paymentMethod.value
+    // 🔥 IMPORTANT
+    paymentMethod: paymentMethod,
+    paymentStatus: (paymentMethod === "COD") ? "Unpaid ❌" : "Paid ✅"
   };
 
   let orders = JSON.parse(localStorage.getItem("orders")) || [];
@@ -173,8 +175,7 @@ function placeOrder() {
   localStorage.setItem("orders", JSON.stringify(orders));
   localStorage.removeItem("cart");
 
-  alert("Order Placed Successfully 🎉");
-
+  alert("Order Placed ✅");
   window.location.href = "orders.html";
 }
 function validateCheckout() {
@@ -200,25 +201,7 @@ function validateCheckout() {
 ================================ */
 
 function loadOrders() {
-  html += `order'
-  <div class="order-card">
-
-    <h3>📅 ${order.date}</h3>
-
-    <p class="status">🚚 ${order.status}</p>
-
-    <!-- 🔥 PAYMENT INFO -->
-    <p class="payment">
-      💳 Payment: ${order.paymentMethod}
-    </p>
-
-    <p class="payment-status 
-      ${order.paymentStatus.includes('Paid') ? 'paid' : 'unpaid'}">
-      ${order.paymentStatus}
-    </p>
-
-    ${getTrackingUI(order.step)}
-`;
+ 
 function getTrackingUI(step) {
 
   return `
